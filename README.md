@@ -17,7 +17,7 @@ For using this networking library, you need to follow the below instructions.
 
 <b>Step 1: </b> Add Dependency in build.gradle
 <pre>  compile 'com.droidmentor:helper:1.0.1' </pre>
-<b>Step 2: </b> Set Base URL and common headers if needed. Base URL field is mandatory.
+<b>Step 2: </b> Set Base URL and common headers if needed. Base URL field is mandatory.</br>
 <b>Step 3: </b> This library checks your internet connection be default so if you want to toast message you can set the error message.
 <pre>  ApiClient.setBaseUrl(BASE_URL);
   ApiClient.setNetworkErrorMessage("Network Error");
