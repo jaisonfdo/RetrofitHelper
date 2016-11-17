@@ -50,3 +50,4 @@ In <b>AndroidManifest.xml</b><br>
 
 Specify all the needed permissions. If you don't, permission requests fail silently. That's an Android thing.
 
+For more information, check out my detailed guide here :  http://droidmentor.com/retrofithelper-library/
