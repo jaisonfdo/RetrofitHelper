@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/jaisonfdo/RetrofitHelper'
     gitUrl = 'https://github.com/jaisonfdo/RetrofitHelper.git'
 
-    libraryVersion = '1.0.1'
+    libraryVersion = '1.1.1'
 
     developerId = 'jaison'
     developerName = 'Jaison Fernando'
@@ -26,7 +26,7 @@ ext {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 15
@@ -51,11 +51,13 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
 
     // retrofit, gson
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+
+    compile 'com.squareup.okhttp:okhttp:2.7.2'
 
     testCompile 'junit:junit:4.12'
 

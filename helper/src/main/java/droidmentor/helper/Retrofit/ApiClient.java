@@ -1,10 +1,12 @@
 package droidmentor.helper.Retrofit;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -65,10 +67,17 @@ public class ApiClient
     public static ApiInterface getClient(boolean with_header,final Map<String, String> customHeaders)
     {
 
+        if(TextUtils.isEmpty(BASE_URL))
+            BASE_URL="https://api.vookmark.co/";
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(2, TimeUnit.MINUTES)
+                .readTimeout(2,TimeUnit.MINUTES).build();
+
         Retrofit retrofit;
 
             Retrofit.Builder builder=new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl(BASE_URL).client(client)
                     .addConverterFactory(GsonConverterFactory.create());
 
         String TAG = "APIClient";

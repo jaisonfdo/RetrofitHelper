@@ -1,6 +1,7 @@
 package droidmentor.helper.Retrofit;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,10 +23,12 @@ import retrofit2.Response;
 public class APICall<T> {
 
 
+    private Call call;
     private APIListener responseListener;
     private Activity activity;
     private Gson gson = new Gson();
     private ApiInterface apiService;
+    private Context context;
 
     public static  boolean ShowNetworkError= true;
     public static String NETWORK_CONNECTION_ERROR = "Network connection failure.";
@@ -43,6 +46,14 @@ public class APICall<T> {
         init(activity, ApiClient.getCommonHeaders(), null);
     }
 
+    public APICall() {
+        init(null, ApiClient.getCommonHeaders(), null);
+    }
+
+    public APICall(Map<String, String> customHeaders) {
+        init(null, ApiClient.getCommonHeaders(), customHeaders);
+    }
+
     // boolean flag decides the header occurance
 
     public APICall(Activity activity, boolean with_header) {
@@ -50,6 +61,13 @@ public class APICall<T> {
             init(activity, ApiClient.getCommonHeaders(), null);
         else
             init(activity, null, null);
+    }
+
+    // boolean flag decides the header occurance
+
+    public APICall(Context context, Map<String, String> customHeaders) {
+        this.context=context;
+        init(null, ApiClient.getCommonHeaders(), customHeaders);
     }
 
     // you can add additional header
@@ -75,17 +93,74 @@ public class APICall<T> {
         init(activity, defaultHeaders, customHeaders);
     }
 
+    // Standard Object
+
+    public APICall(Activity activity,APIListener listener) {
+        init(activity, ApiClient.getCommonHeaders(), null,listener);
+    }
+
+    // boolean flag decides the header occurance
+
+    public APICall(Activity activity, boolean with_header,APIListener listener) {
+        if (with_header)
+            init(activity, ApiClient.getCommonHeaders(), null,listener);
+        else
+            init(activity, null, null);
+    }
+
+    // you can add additional header
+
+    public APICall(Activity activity, boolean with_header, Map<String, String> customHeaders,APIListener listener) {
+
+        if (with_header)
+            init(activity, ApiClient.getCommonHeaders(), customHeaders,listener);
+        else
+            init(activity,null, customHeaders,listener);
+    }
+
+    // set default header
+
+    public APICall(Activity activity, Map<String, String> defaultHeaders,APIListener listener) {
+        init(activity, defaultHeaders, null,listener);
+
+    }
+
+    // set default and additional header
+
+    public APICall(Activity activity, Map<String, String> defaultHeaders, Map<String, String> customHeaders,APIListener listener) {
+        init(activity, defaultHeaders, customHeaders,listener);
+    }
+
+
     public void init(Activity activity, Map<String, String> defaultHeaders, Map<String, String> customHeaders) {
         apiService = ApiClient.getClient(defaultHeaders, customHeaders);
-        this.activity = activity;
-        try
-        {
-            responseListener = (APIListener) activity;
-        }catch (Exception e)
-        {
-            responseListener=null;
-        }
 
+        if(activity!=null)
+        {
+            this.activity = activity;
+            if(activity!=null)
+                this.context=activity;
+            try
+            {
+                responseListener = (APIListener) activity;
+            }catch (Exception e)
+            {
+                responseListener=null;
+            }
+        }
+        else
+            responseListener=null;
+
+
+    }
+
+    public void init(Activity activity, Map<String, String> defaultHeaders, Map<String, String> customHeaders,APIListener listener) {
+        apiService = ApiClient.getClient(defaultHeaders, customHeaders);
+        this.activity = activity;
+        responseListener = listener;
+
+        if(activity!=null)
+            this.context=activity;
     }
 
     public void APIRequest(Method type, String url, final Class<T> responseModel, RequestBody body, Map<String, String> params,
@@ -125,10 +200,10 @@ public class APICall<T> {
     }
 
 
-    private void APIRequest(Method type, String url, final Class<T> responseModel, RequestBody body, Map<String, String> params,
+    public void APIRequest(Method type, String url, final Class<T> responseModel, RequestBody body, Map<String, String> params,
                             final int from, boolean is_PDshow, String message,
                             final APIListener responseListener) {
-        Call call = null;
+        call = null;
 
         String TAG = "APICall";
 
@@ -136,9 +211,9 @@ public class APICall<T> {
             Log.d(TAG, URL_EMPTY);
         else if(responseListener==null)
             Log.d(TAG, LISTENER_EMPTY);
-        else if (Network_check.isNetworkAvailable(activity)) {
+        else if (Network_check.isNetworkAvailable(context)) {
 
-            if(is_PDshow)
+            if(is_PDshow && activity!=null)
             {
                 if (TextUtils.isEmpty(message))
                     ProgressDialogLoader.progressdialog_creation(activity, "Loading");
@@ -189,19 +264,25 @@ public class APICall<T> {
             assert call != null;
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(Call<ResponseBody> call,Response<ResponseBody> response) {
                     try {
-                        Log.d("API Call", "Success");
+
+                        Log.d("Call URL",""+call.request().url().toString());
+                        //Log.d("API Call", "Success");
                         String json = response.body().string();
-                        Log.d("API Call", "onSuccess: " + json);
+                        //Log.d("API Call", "onSuccess: " + json);
                         T res = gson.fromJson(json, responseModel);
-                        responseListener.onSuccess(from, response, res);
+                        Response<ResponseBody> resp=response;
+                        String json1 = resp.body().string();
+                        //Log.d("API Call", "onSuccess: " + json1);
+
+                        responseListener.onSuccess(from, resp, res);
                         ProgressDialogLoader.progressdialog_dismiss();
                     } catch (Exception e) {
                         e.printStackTrace();
+                        ProgressDialogLoader.progressdialog_dismiss();
+                        responseListener.onFailure(from,new Throwable(e.getCause()));
                     }
-
-
                 }
 
                 @Override
@@ -221,6 +302,10 @@ public class APICall<T> {
 
     }
 
+    public void cancel()
+    {
+        call.cancel();
+    }
 
     /**
      * Supported request methods.

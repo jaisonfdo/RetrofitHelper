@@ -28,7 +28,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     String TAG = "Retrofit Example";
     APICall networkCall;
 
-    public static final String BASE_URL = "http://testapi.droidmentor.com/";
+    public static final String BASE_URL = "http://api.droidmentor.com/";
 
     private EditText etUserName, etUserEmail;
     private TextInputLayout inputUserName, inputUserEmail;
@@ -79,6 +79,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
 
         }
     }
+
 
     public void addUser() {
         Map<String, String> queryParams = new HashMap<>();

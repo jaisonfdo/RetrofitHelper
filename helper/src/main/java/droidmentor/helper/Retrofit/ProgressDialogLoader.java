@@ -3,6 +3,7 @@ package droidmentor.helper.Retrofit;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Created by Jaison on 18/08/16.
@@ -12,6 +13,7 @@ public class ProgressDialogLoader
     private ProgressDialog pd;
 
     private static ProgressDialog progressDialog;
+    public static ProgressUtils progressUtils;
 
     Context context;
     Activity activity;
@@ -47,8 +49,16 @@ public class ProgressDialogLoader
     public static void progressdialog_creation(Activity activity,String title)
     {
         try {
-            if(progressDialog==null)
-                progressDialog = ProgressDialog.show(activity, "",title, true);
+
+           if(progressUtils==null)
+           {
+               progressUtils=new ProgressUtils(activity);
+               Log.d("dialog null","show");
+               progressUtils.show_dialog(false);
+           }
+
+           /* if(progressDialog==null)
+                progressDialog = ProgressDialog.show(activity, "",title, true);*/
         }
         catch(Exception e)
         {
@@ -59,10 +69,17 @@ public class ProgressDialogLoader
     public static void progressdialog_dismiss()
     {
 
-        if ((progressDialog != null) && progressDialog.isShowing())
-            progressDialog.dismiss();
+        if(progressUtils!=null)
+        {
+            Log.d("dialog not null","dismiss");
+            progressUtils.dismiss_dialog();
+        }
+        progressUtils=null;
 
-        progressDialog = null;
+        /*if ((progressDialog != null) && progressDialog.isShowing())
+            progressDialog.dismiss();*/
+
+       // progressDialog = null;
 
 
     }

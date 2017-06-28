@@ -8,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.QueryMap;
@@ -65,13 +66,13 @@ public interface ApiInterface<T>
     @DELETE
     Call<ResponseBody> deleteRequest(@Url String url);
 
-    @DELETE
+    @HTTP(method = "DELETE", hasBody = true)
     Call<ResponseBody> deleteRequest(@Url String url, @Body RequestBody post);
 
     @DELETE
     Call<ResponseBody> deleteRequest(@Url String url, @QueryMap Map<String, String> params);
 
-    @DELETE
+    @HTTP(method = "DELETE", hasBody = true)
     Call<ResponseBody> deleteRequest(@Url String url, @QueryMap Map<String, String> params, @Body RequestBody post);
 
 
